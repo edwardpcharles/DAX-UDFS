@@ -1,0 +1,128 @@
+createOrReplace
+
+	function 'EdwardCharles.CardChip' =
+			(
+				colorScheme : SCALAR STRING VAL,	// Chip Color Scheme
+				iconType : SCALAR STRING VAL, 		// Better, Worse, or ""
+				valueText : SCALAR STRING VAL,      // Non-bold Value
+				labelText : SCALAR STRING VAL,		// Bold Label
+				centerAdjust : SCALAR Int64 VAL,	// Adds or Subtracts Length to the End of the Chip
+				minValueLength : SCALAR Int64 VAL,  // Minimum Value Length
+				minLabelLength : SCALAR Int64 VAL  	// Minimum Value Length
+			)
+			=>
+				VAR bgColor =
+					SWITCH(
+						colorScheme,
+						"spring", "#ECFDF5",
+						"sunset", "#FFF7ED",
+						"ocean",  "#E0F2FE",
+						"forest", "#D1FAE5",
+						"rose",   "#FEF2F2",
+						"lavender", "#F3E8FF",
+						"gold",   "#FFFBEB",
+						"peach",  "#FFF1E6",
+						"ice",    "#EFF6FF",
+						"citrus", "#FEF9C3",
+						"#F9FAFB"  -- default
+					)
+			
+				VAR borderColor =
+					SWITCH(
+						colorScheme,
+						"spring", "#A7F3D0",
+						"sunset", "#FDBA74",
+						"ocean",  "#7DD3FC",
+						"forest", "#4ADE80",
+						"rose",   "#FECACA",
+						"lavender", "#C084FC",
+						"gold",   "#FBBF24",
+						"peach",  "#FDBA91",
+						"ice",    "#60A5FA",
+						"citrus", "#FACC15",
+						"#E5E7EB"
+					)
+			
+				VAR textColor =
+					SWITCH(
+						colorScheme,
+						"spring", "#047857",
+						"sunset", "#C2410C",
+						"ocean",  "#0369A1",
+						"forest", "#065F46",
+						"rose",   "#B91C1C",
+						"lavender", "#7E22CE",
+						"gold",   "#B45309",
+						"peach",  "#9A3412",
+						"ice",    "#1E40AF",
+						"citrus", "#A16207",
+						"#374151"
+					)
+			
+				VAR iconColor =
+					SWITCH(
+						colorScheme,
+						"spring", "#059669",
+						"sunset", "#EA580C",
+						"ocean",  "#0284C7",
+						"forest", "#10B981",
+						"rose",   "#DC2626",
+						"lavender", "#9333EA",
+						"gold",   "#D97706",
+						"peach",  "#C2410C",
+						"ice",    "#2563EB",
+						"citrus", "#CA8A04",
+						"#6B7280"
+					)
+			
+				VAR iconPath =
+					SWITCH (
+						iconType,
+						"better",
+							"M21.75 6L15 12.75l-4.5 -4.5L2.25 16.5M21.75 6h-4.5m4.5 0v4.5",
+						"worse",
+							"M21.75 18L15 11.25l-4.5 4.5L2.25 7.5M21.75 18h-4.5m4.5 0v-4.5",""
+						//"M5.25 12h13.5"
+					)
+			
+				VAR paddingX = 12
+				VAR iconSize = if(iconType = "", 0, 16)
+				VAR gap = if(iconType = "", 0, 8)
+				VAR valueLength = if(LEN ( valueText ) > minValueLength, LEN ( valueText ),minValueLength)
+				VAR labelLength = if(LEN ( labelText ) > minLabelLength, LEN ( labelText ),minLabelLength)
+			
+				VAR svgHeight = 28
+				VAR centerY = svgHeight / 2
+			
+				VAR valueX = paddingX + iconSize + gap
+				VAR labelX = valueX + valueLength * 7 + 8
+			
+				VAR svgWidth = labelX +  labelLength  * 7 + paddingX + centerAdjust
+			
+				VAR icon = "<svg x='" & paddingX & "' y='" & ( centerY - iconSize / 2 ) & "' " &
+					"width='" & iconSize & "' height='" & iconSize & "' viewBox='0 0 24 24' " &
+					"fill='none' stroke='" & iconColor & "' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>" &
+					"<path d='" & iconPath & "' />" &
+					"</svg>"
+			
+				VAR valueText = "<text x='" & valueX & "' y='" & centerY & "' font-size='12' font-weight='600' " &
+					"dominant-baseline='middle' text-anchor='start' " &
+					"font-family='Segoe UI, Arial, sans-serif' fill='" & textColor & "'>" &
+					valueText &
+					"</text>"
+			
+				VAR labelText ="<text x='" & labelX & "' y='" & centerY & "' font-size='12' font-weight='400' opacity='0.75' " &
+					"dominant-baseline='middle' text-anchor='start' " &
+					"font-family='Segoe UI, Arial, sans-serif' fill='" & textColor & "'>" &
+					labelText &
+					"</text>"
+				RETURN
+				"data:image/svg+xml;utf8," &
+				"<svg xmlns='http://www.w3.org/2000/svg' width='" & svgWidth & "' height='" & svgHeight & "'>" &
+					"<rect x='0.5' y='0.5' rx='8' ry='8' width='" & svgWidth - 1 & "' height='" & svgHeight - 1 & "' " &
+						"fill='" & bgColor & "' stroke='" & borderColor & "'/>" &
+						icon &
+						valueText &
+						labelText &
+				"</svg>"
+
