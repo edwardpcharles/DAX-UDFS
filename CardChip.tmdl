@@ -8,7 +8,7 @@ createOrReplace
 				labelText : SCALAR STRING VAL,		// Bold Label
 				centerAdjust : SCALAR Int64 VAL,	// Adds or Subtracts Length to the End of the Chip
 				minValueLength : SCALAR Int64 VAL,  // Minimum Value Length
-				minLabelLength : SCALAR Int64 VAL  	// Minimum Value Length
+				minLabelLength : SCALAR Int64 VAL  	// Minimum Label Length
 			)
 			=>
 				VAR bgColor =
@@ -107,13 +107,13 @@ createOrReplace
 			
 				VAR valueText = "<text x='" & valueX & "' y='" & centerY & "' font-size='12' font-weight='600' " &
 					"dominant-baseline='middle' text-anchor='start' " &
-					"font-family='Segoe UI, Arial, sans-serif' fill='" & textColor & "'>" &
+					"font-family='Segoe UI, SF Pro Text, -apple-system, Roboto, Helvetica Neue, sans-serif' fill='" & textColor & "'>" &
 					valueText &
 					"</text>"
 			
 				VAR labelText ="<text x='" & labelX & "' y='" & centerY & "' font-size='12' font-weight='400' opacity='0.75' " &
 					"dominant-baseline='middle' text-anchor='start' " &
-					"font-family='Segoe UI, Arial, sans-serif' fill='" & textColor & "'>" &
+					"font-family='Segoe UI, SF Pro Text, -apple-system, Roboto, Helvetica Neue, sans-serif' fill='" & textColor & "'>" &
 					labelText &
 					"</text>"
 				RETURN
@@ -125,4 +125,5 @@ createOrReplace
 						valueText &
 						labelText &
 				"</svg>"
+
 
