@@ -1,0 +1,110 @@
+createOrReplace
+
+	function 'EdwardCharles.CardBar' =
+			(
+				colorScheme : SCALAR STRING VAL,	// Bar color scheme
+				val : SCALAR NUMERIC VAL, 			// The value the bar represents
+				maxVal : SCALAR NUMERIC VAL,      	// The value the value is being compared against (controls the scale of the bar)
+				animate : SCALAR BOOLEAN VAL,		// True / False if the bar should bounce up when loaded
+				selected : SCALAR BOOLEAN VAL		// True / False if the bar should be the selected color
+			)
+			=>
+				VAR schemeLower = LOWER(colorScheme)
+
+				VAR baseFillColor =
+					SWITCH(
+						schemeLower,
+						"spring",   "#ECFDF5",
+						"sunset",   "#FFF7ED",
+						"ocean",    "#E0F2FE",
+						"forest",   "#D1FAE5",
+						"rose",     "#FEF2F2",
+						"lavender", "#F3E8FF",
+						"gold",     "#FFFBEB",
+						"peach",    "#FFF1E6",
+						"ice",      "#EFF6FF",
+						"citrus",   "#FEF9C3",
+						"#F9FAFB" 
+					)
+				
+				VAR fillColor =
+					IF(
+						selected,
+						SWITCH(
+							schemeLower,
+							"spring",   "#06A760",
+							"sunset",   "#D97706", 
+							"ocean",    "#0369A1",
+							"forest",   "#166534", 
+							"rose",     "#991B1B",
+							"lavender", "#5B21B6", 
+							"gold",     "#B45309",
+							"peach",    "#C2410C", 
+							"ice",      "#1E40AF",
+							"citrus",   "#CA8A04",
+							"#D1D5DB"  
+						),
+						baseFillColor
+					)
+
+				VAR borderColor =
+					SWITCH(
+						schemeLower,
+						"spring",   "#06A760",
+						"sunset",   "#F97316",
+						"ocean",    "#0284C7",
+						"forest",   "#15803D",
+						"rose",     "#B91C1C",
+						"lavender", "#7C3AED",
+						"gold",     "#B45309",
+						"peach",    "#F97316",
+						"ice",      "#1D4ED8",
+						"citrus",   "#CA8A04",
+						"#374151" 
+					)
+				
+				VAR safeValue = MAX(0, MIN(val, maxVal))
+
+				VAR barHeightPct = IF(maxVal > 0, 100 * (safeValue / maxVal), 0)
+    			VAR barYPct = 100 - barHeightPct
+
+				VAR barWidthPct = 25
+    			VAR barXPct = 37.5
+    			VAR radiusPct = barWidthPct * 0.2
+
+				VAR barPath =
+					"M " & barXPct & " " & (barYPct + radiusPct) & " " &
+					"Q " & barXPct & " " & barYPct & " " &
+						(barXPct + radiusPct) & " " & barYPct & " " &
+					"H " & (barXPct + barWidthPct - radiusPct) & " " &
+					"Q " & (barXPct + barWidthPct) & " " & barYPct & " " &
+						(barXPct + barWidthPct) & " " & (barYPct + radiusPct) & " " &
+					"V 100 " &
+					"H " & barXPct & " " &
+					"Z"
+
+				VAR desiredBounce = 10
+				VAR safeBounce = MIN(desiredBounce, barYPct - 4)
+
+				VAR animation =
+					IF(
+						animate,
+						"<animateTransform attributeName='transform'
+							type='translate'
+							from='0 0'
+							to='0-" & safeBounce & "'
+							dur='0.1s'
+							begin='0s'
+							fill='freeze' />",
+						""
+					)
+				
+				VAR svg =
+					"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='xMidYMax meet'>" &
+						"<path d='" & barPath & "' fill='" & fillColor & "' stroke='" & borderColor & "' stroke-width='1'>" &
+							animation &
+						"</path>" &
+					"</svg>"
+
+				RETURN
+					"data:image/svg+xml;utf8," & svg
